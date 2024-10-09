@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.ProductDAO">
+    <resultMap id="productResultMap" type="com.example.model.Product">
+        <id property="id" column="id"/>
+        <result property="gmt_created" column="gmtCreated"/>
+        <result property="gmt_modified" column="gmtModified"/>
+        <result property="user_id" column="userId"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="name" column="name"/>
+        <result property="detail" column="detail"/>
+        <result property="images" column="images"/>
+        <result property="status" column="status"/>
+        <result property="stock" column="stock"/>
+        <result property="category_ids" column="categories"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.example.shopping_app.dataObject.ProductDO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO product (gmt_created, gmt_modified, user_id, description, price, name, detail, images, status, stock, category_ids)
+        VALUES (now(), now(), #{userId}, #{description}, #{price}, #{name}, #{detail}, #{images}, #{status}, #{stock}, #{categories})
+    </insert>
+
+    <select id="selectByName" resultMap="productResultMap">
+        select * from product where name = #{name}
+    </select>
+
+    <select id="selectById" resultMap="productResultMap">
+        select * from product where id = #{id}
+    </select>
+
+    <update id="updateStock" parameterType="com.example.shopping_app.dataObject.ProductDO">
+        UPDATE product
+        SET
+           <trim prefix="" suffix="" suffixOverrides=",">
+               <if test="stock!= null">
+                   stock = #{stock},
+               </if>
+               <if test="status!= null">
+                   status = #{status},
+               </if>
+               <if test="description!= null">
+                   description = #{description},
+               </if>
+               <if test="price!= null">
+                   price = #{price},
+               </if>
+               <if test="name!= null">
+                   name = #{name},
+               </if>
+               <if test="detail!= null">
+                   detail = #{detail},
+               </if>
+               <if test="images!= null">
+                   images = #{images},
+               </if>
+               <if test="categories!= null">
+                   category_ids = #{categories},
+               </if>
+               <if test="user_id != null">
+                   user_id = #{userId},
+               </if>
+               gmt_modified = now()
+           </trim>
+        WHERE id = #{id}
+    </update>
+    <select id="selectAllCounts" resultMap="productResultMap">
+            select * from product
+    </select>
+    <select id="pageQuery" resultMap="productResultMap">
+        SELECT * FROM product
+        WHERE 1=1
+        ORDER BY id DESC
+        LIMIT #{param.pageSize}
+        OFFSET #{param.pageNumber * param.pageSize}
+</mapper>
